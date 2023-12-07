@@ -18,15 +18,17 @@ try:
     # .enc 모두 가져오기
     data_list = glob.glob('*.enc')
 
+    # iv 읽기
+    file_in = open('iv.bin', 'rb')
+    iv = b64decode(file_in.read())
+    file_in.close()
+
+    cipher = AES.new(file_key, AES.MODE_CBC, iv)
+    iter = 0
 
     for data_file in data_list:
         # 파일명 추출
         file_basename = os.path.splitext(data_file)[0]
-
-        # iv 읽기
-        file_in = open(file_basename + '_iv.bin', 'rb')
-        iv = b64decode(file_in.read())
-        file_in.close()
 
         # .enc 읽기
         file_in = open(data_file, 'rb')
@@ -34,9 +36,8 @@ try:
         file_in.close()
 
         # AES 복호화
-        cipher = AES.new(file_key, AES.MODE_CBC, iv)
         pt = unpad(cipher.decrypt(ct), AES.block_size)        
-        
+            
         # 복호화한 파일 생성
         file_out = open('dec_' + file_basename + '.txt', 'wb')
         file_out.write(pt)

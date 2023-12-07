@@ -32,18 +32,18 @@ enc_file_key = cipher_rsa.encrypt(file_key)
 file_out.write(enc_file_key)
 file_out.close()
 
+# 파일을 AES로 암호화하기 위한 과정
+cipher = AES.new(file_key, AES.MODE_CBC)
+iv = b64encode(cipher.iv)
+
+# iv를 파일로 저장
+file_out = open('iv.bin', 'wb')
+file_out.write(iv)
+file_out.close()
+
 for data_file in data_list:
     # 파일명 추출
     file_basename = os.path.splitext(data_file)[0]
-
-    # 파일을 AES로 암호화하기 위한 과정
-    cipher = AES.new(file_key, AES.MODE_CBC)
-    iv = b64encode(cipher.iv)
-
-    # iv를 파일로 저장
-    file_out = open(file_basename + '_iv.bin', 'wb')
-    file_out.write(iv)
-    file_out.close()
 
     # 파일 읽어오기
     file_in = open(data_file, 'rb')
